@@ -1,0 +1,42 @@
+
+@import "components/Dialog/dialog";
+@import "components/LoginPage/loginpage";
+@import "components/Sidebar/sidebar";
+@import "components/UserDetails/user-details";
+@import "components/Сompanion/companion";
+
+html {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow-x:hidden;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #37474f
+;
+}
+
+ul
+{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
