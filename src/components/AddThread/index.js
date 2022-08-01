@@ -1,34 +1,26 @@
 import React from "react";
-import {
-  setDoc,
-  doc,
-  collection,
-  addDoc,
-  query,
-  where,
-  updateDoc,
-  arrayUnion,
-} from "firebase/firestore";
-import { db } from "services/firebase";
+
+import { createThread } from "services/firebase";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUserState } from "store/userSlice";
+import { fetchUserThreads } from "store/threadSlice";
 
 export default () => {
   const user = useSelector(selectUserState);
+  const dispatch = useDispatch();
   async function handleClick() {
     const value = prompt("entering the thread name");
     if (value) {
-      const docRef = await addDoc(collection(db, "threads"), {
-        threadName: value,
+      const data = {
+        userArray: undefined,
         createdBy: user.uid,
-      });
-      console.log(docRef);
-
-      const userThreadsRef = doc(db, "users", user.uid);
-      await updateDoc(userThreadsRef, {
-        threads: arrayUnion(docRef.id),
-      });
+        name: value,
+        type: 1,
+      };
+      createThread(data)
+        .then(() => dispatch(fetchUserThreads(user.uid)))
+        .catch((e) => alert(e.message));
     }
   }
 

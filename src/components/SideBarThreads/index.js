@@ -1,30 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "services/firebase";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserState } from "store/userSlice";
-import { selectCurrentThread, setCurrentThread } from "store/threadSlice";
+import {
+  fetchUserThreads,
+  selectCurrentThread,
+  selectThreadsByUserId,
+  setCurrentThread,
+} from "store/threadSlice";
 
 export default () => {
-  const [threads, setThreads] = useState([]);
   const user = useSelector(selectUserState);
   const currentThread = useSelector(selectCurrentThread);
+  const threads = useSelector(selectThreadsByUserId);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const q = query(collection(db, "threads"));
-    const unsub = onSnapshot(q, (snapshot) => {
-      const array = snapshot.docs.reduce((acc, i) => {
-        if (user.threads.includes(i.id)) {
-          acc.push(i);
-          return acc;
-        } else return acc;
-      }, []);
-      setThreads(array);
-    });
-
-    return () => unsub();
-  }, [user.threads]);
+    if (user.uid) dispatch(fetchUserThreads(user.uid));
+  }, [dispatch, user.uid]);
 
   function handleSelectThread(id) {
     dispatch(setCurrentThread({ currentThread: id }));
@@ -39,7 +31,7 @@ export default () => {
           style={{ background: currentThread === i.id ? "orange" : "" }}
           onClick={() => handleSelectThread(i.id)}
         >
-          {i.data().threadName}
+          {i.name}
         </div>
       ))}
     </div>

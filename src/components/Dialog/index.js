@@ -3,42 +3,30 @@ import AddMessage from "components/AddMessage";
 import "./_dialog.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchMessages,
   selectCurrentThread,
   selectMessages,
-  setMessages,
 } from "store/threadSlice";
-import { onSnapshot, collection, query, orderBy } from "firebase/firestore";
-import { db } from "services/firebase";
-import { selectUserState } from "store/userSlice";
+
+import { selectAllUsers, selectUserState } from "store/userSlice";
+import { getUserById } from "services/utils";
 
 export default () => {
   const currentThread = useSelector(selectCurrentThread);
-  const user = useSelector(selectUserState);
-  const dispatch = useDispatch();
+  const currentUser = useSelector(selectUserState);
+  const allUsers = useSelector(selectAllUsers);
   const messages = useSelector(selectMessages);
+  const dispatch = useDispatch();
 
   const bodyRef = useRef(null);
 
   useEffect(() => {
-    scrollToMyRef();
-    console.log("scroll");
-  }, [currentThread]);
+    if (bodyRef.current) scrollToMyRef();
+  }, [messages]);
 
   useEffect(() => {
     if (currentThread) {
-      const q = query(
-        collection(db, `threads/${currentThread}/messages`),
-        orderBy("timestamp")
-      );
-      const unsub = onSnapshot(q, (snap) => {
-        const messagesArray = snap.docs.map((i) => {
-          const data = i.data();
-          data.timestamp = data.timestamp?.seconds;
-          return data;
-        });
-        dispatch(setMessages({ messages: messagesArray }));
-      });
-      return () => unsub();
+      dispatch(fetchMessages(currentThread));
     }
   }, [currentThread, dispatch]);
 
@@ -56,21 +44,31 @@ export default () => {
             <div
               key={idx}
               className={
-                i.uid === user.uid ? "message message-right" : "message"
+                i.sentBy === currentUser.uid
+                  ? "message message-right"
+                  : "message"
               }
             >
               <div className="message__avatar">
-                <img src={i.avatar} alt="avatar" referrerPolicy="no-referrer" />
+                <img
+                  src={getUserById(allUsers, i.sentBy).avatar}
+                  alt="avatar"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <div className="message_text">
-                <pre>{i.message}</pre>
+                <pre>{i.messageText}</pre>
               </div>
             </div>
           );
         })}
       </div>
       <div className="dialog__actions">
-        <AddMessage scrollToMyRef={scrollToMyRef} />
+        {currentThread?.members?.includes(currentUser) ? (
+          "You can't read messages at this thread until you subscribe"
+        ) : (
+          <AddMessage scrollToMyRef={scrollToMyRef} />
+        )}
       </div>
     </section>
   );

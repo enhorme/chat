@@ -1,17 +1,10 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectUserState } from "store/userSlice";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "services/firebase";
-import "./styles.scss";
+import { db, postMessage } from "services/firebase";
 import { selectCurrentThread } from "store/threadSlice";
+import "./styles.scss";
 
 const AddMessage = ({ scrollToMyRef }) => {
   const [value, setValue] = useState("");
@@ -23,14 +16,7 @@ const AddMessage = ({ scrollToMyRef }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     if (currentThread) {
-      const messageRef = collection(db, `threads/${currentThread}/messages`);
-      await addDoc(messageRef, {
-        message: value,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        uid: user.uid,
-        timestamp: serverTimestamp(),
-      });
+      await postMessage(value, currentThread, user.uid);
       setValue("");
       scrollToMyRef();
     }

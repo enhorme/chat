@@ -4,7 +4,7 @@ import threadSlice from "store/threadSlice";
 
 export default configureStore({
   reducer: {
-    user: userSlice,
+    users: userSlice,
     thread: threadSlice,
   },
 });

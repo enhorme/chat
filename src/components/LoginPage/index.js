@@ -12,7 +12,6 @@ export default () => {
           uid: cred.user.uid,
           displayName: cred.user.displayName,
           email: cred.user.email,
-          friends: [],
           threads: [],
           avatar: cred.user.photoURL,
         };

@@ -1,10 +1,10 @@
 import Sidebar from "components/Sidebar";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserState, setUser } from "store/userSlice";
+import { fetchAllUsers, selectUserState, setUser } from "store/userSlice";
 import { auth, db } from "services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc, onSnapshot, collection } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import LoginPage from "components/LoginPage";
 import Dialog from "components/Dialog";
 
@@ -24,6 +24,8 @@ function App() {
         dispatch(setUser(null));
       }
     });
+
+    dispatch(fetchAllUsers());
   }, [dispatch]);
 
   return (

@@ -4,12 +4,14 @@ import UserDetails from "components/UserDetails";
 import "./_sidebar.scss";
 import AddThread from "components/AddThread";
 import SideBarThreads from "components/SideBarThreads";
+import { searchThreadsByName } from "services/firebase";
 
 export default () => {
   const [value, setValue] = useState("");
 
   function handleSearch(e) {
     setValue(e.target.value);
+    searchThreadsByName(e.target.value);
   }
 
   return (
